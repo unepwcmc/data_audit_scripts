@@ -1,0 +1,23 @@
+default: &default
+  host: localhost
+  encoding: unicode
+  adapter: postgresql
+  pool: 5
+  timeout: 5000
+  username: postgres
+  database: data_audit_development
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+  database: data_audit_test
+
+production:
+  <<: *default
+  database: data_audit_production
+
+staging:
+  <<: *default
+  database: data_audit_staging
