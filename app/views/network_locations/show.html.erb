@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Path:</strong>
+  <%= @network_location.path %>
+</p>
+
+<p>
+  <strong>Drive:</strong>
+  <%= @network_location.drive_id %>
+</p>
+
+<%= link_to 'Edit', edit_network_location_path(@network_location) %> |
+<%= link_to 'Back', network_locations_path %>

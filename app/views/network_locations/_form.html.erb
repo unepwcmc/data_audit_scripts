@@ -1,0 +1,25 @@
+<%= form_for(@network_location) do |f| %>
+  <% if @network_location.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@network_location.errors.count, "error") %> prohibited this network_location from being saved:</h2>
+
+      <ul>
+      <% @network_location.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :path %><br>
+    <%= f.text_field :path %>
+  </div>
+  <div class="field">
+    <%= f.label :drive_id %><br>
+    <%= f.number_field :drive_id %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
