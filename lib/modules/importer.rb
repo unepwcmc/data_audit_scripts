@@ -1,8 +1,19 @@
 require 'csv'
 
+DIRECT_TABLES = [:programme, :scope, :license, :importance_level,
+                 :use_level, :source]
+
 class Importer
   def initialize filename: filename
     @filename = filename
+  end
+
+  def import
+    csv_table = CSV.read(@filename, headers: true)
+    csv_table.each do |dataset|
+      converted_dataset = find_fields csv_values: dataset
+      dataset_manipulation converted_dataset: converted_dataset
+    end
   end
 
   def find_fields csv_values: csv_values
@@ -14,5 +25,20 @@ class Importer
       end
     end
     csv_data
+  end
+
+  private
+
+  def dataset_manipulation converted_dataset: converted_dataset
+    converted_dataset.each do |k,v|
+      if DIRECT_TABLES.include? k
+        direct_tables k,v
+      end
+    end
+  end
+
+  def direct_tables k,v
+    cls = Object.const_get(k.to_s.classify, Class.new)
+    cls.find_or_create_by(name: v)
   end
 end
