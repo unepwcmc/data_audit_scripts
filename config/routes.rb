@@ -1,4 +1,26 @@
 Rails.application.routes.draw do
+  resources :network_locations
+
+  resources :users
+
+  resources :drives
+
+  resources :importance_levels
+
+  resources :use_levels
+
+  resources :licenses
+
+  resources :sources
+
+  resources :dataset_formats
+
+  resources :dataset_scopes
+
+  resources :programmes
+
+  resources :datasets
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
