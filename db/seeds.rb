@@ -8,8 +8,8 @@
 
 require 'csv'
 
-source = File.join(Rails.root, 'lib', 'data', 'seeds', 'columns_matching_table.csv')
+source = File.join(Rails.root, 'lib', 'data', 'column_matches.csv')
 
 CSV.foreach(source, headers: true) do |row|
-  Gef::ColumnMatch.create!(row.to_hash)
+  ColumnMatch.create!(row.to_hash)
 end
