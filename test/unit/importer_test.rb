@@ -40,9 +40,10 @@ class TestImporter < ActiveSupport::TestCase
      FactoryGirl.create(:column_match, model_columns: 'license', access_columns: 'License')
      FactoryGirl.create(:column_match, model_columns: 'metadata_author', access_columns: 'Form fill-in by')
      FactoryGirl.create(:column_match, model_columns: 'contact_point', access_columns: 'WCMC Point of contact')
+     FactoryGirl.create(:column_match, model_columns: 'network_location', access_columns: 'NetworkLocation')
 
      parsed_csv = [ { 'Programme' => 'Informatics', 'License' => 'To Kill', 'WCMC Point of contact' => 'Jackson Martinez',
-                       'Form fill-in by' => 'Ricardo Quaresma'} ]
+                       'Form fill-in by' => 'Ricardo Quaresma', 'NetworkLocation' => 'C:\MIGUEL TORRES\FILES'} ]
 
      CSV.stubs(:read).with('long_tables.csv', {:headers => true}).returns(parsed_csv)
 
@@ -50,6 +51,13 @@ class TestImporter < ActiveSupport::TestCase
      Programme.expects(:find_or_create_by).with(name: 'Informatics')
      User.expects(:find_or_create_by).with(name: 'Ricardo Quaresma')
      User.expects(:find_or_create_by).with(name: 'Jackson Martinez')
+
+     Drive.expects(:find_or_create_by).with(name: "C:")
+     drive_mock = mock
+     drive_mock.expects(:first).returns(id: 999).once
+     Drive.expects(:where).with('name = ?',  "C:").returns(drive_mock).once
+
+     NetworkLocation.expects(:find_or_create_by).with(path: 'MIGUEL TORRES\FILES', drive_id: 999)
 
      importer = Importer.new(filename: @filename)
      importer.import

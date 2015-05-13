@@ -38,6 +38,8 @@ class Importer
         direct_tables k,v
       elsif USERS.include? k
         user_info v
+      elsif k == :network_location
+        network_location k,v
       end
     end
   end
@@ -50,4 +52,14 @@ class Importer
   def user_info v
     User.find_or_create_by(name: v)
   end
+
+  def network_location k,v
+    path_splitted = v.split('\\')
+    drive_name = path_splitted[0]
+    path = path_splitted[1..-1].join("\\")
+    Drive.find_or_create_by(name: drive_name)
+    drive_id = Drive.where('name = ?', drive_name).first[:id]
+    NetworkLocation.find_or_create_by(drive_id: drive_id, path: path)
+  end
+
 end
