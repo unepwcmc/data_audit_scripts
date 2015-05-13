@@ -3,6 +3,8 @@ require 'csv'
 DIRECT_TABLES = [:programme, :scope, :license, :importance_level,
                  :use_level, :source]
 
+USERS = [:metadata_author, :contact_point]
+
 class Importer
   def initialize filename: filename
     @filename = filename
@@ -33,6 +35,8 @@ class Importer
     converted_dataset.each do |k,v|
       if DIRECT_TABLES.include? k
         direct_tables k,v
+      elsif USERS.include? k
+        user_info v
       end
     end
   end
@@ -40,5 +44,9 @@ class Importer
   def direct_tables k,v
     cls = Object.const_get(k.to_s.classify, Class.new)
     cls.find_or_create_by(name: v)
+  end
+
+  def user_info v
+    User.find_or_create_by(name: v)
   end
 end

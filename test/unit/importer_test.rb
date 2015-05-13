@@ -39,13 +39,17 @@ class TestImporter < ActiveSupport::TestCase
      FactoryGirl.create(:column_match, model_columns: 'programme', access_columns: 'Programme')
      FactoryGirl.create(:column_match, model_columns: 'license', access_columns: 'License')
      FactoryGirl.create(:column_match, model_columns: 'metadata_author', access_columns: 'Form fill-in by')
+     FactoryGirl.create(:column_match, model_columns: 'contact_point', access_columns: 'WCMC Point of contact')
 
-     parsed_csv = [ { 'Programme' => 'Informatics', 'License' => 'To Kill' } ]
+     parsed_csv = [ { 'Programme' => 'Informatics', 'License' => 'To Kill', 'WCMC Point of contact' => 'Jackson Martinez',
+                       'Form fill-in by' => 'Ricardo Quaresma'} ]
 
      CSV.stubs(:read).with('long_tables.csv', {:headers => true}).returns(parsed_csv)
 
      License.expects(:find_or_create_by).with(name: 'To Kill')
      Programme.expects(:find_or_create_by).with(name: 'Informatics')
+     User.expects(:find_or_create_by).with(name: 'Ricardo Quaresma')
+     User.expects(:find_or_create_by).with(name: 'Jackson Martinez')
 
      importer = Importer.new(filename: @filename)
      importer.import
