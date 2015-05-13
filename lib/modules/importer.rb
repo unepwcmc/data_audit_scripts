@@ -1,7 +1,8 @@
 require 'csv'
 
-DIRECT_TABLES = [:programme, :scope, :license, :importance_level,
-                 :use_level, :source]
+DIRECT_TABLES = [:programme, :license, :importance_level,
+                 :use_level, :source, :dataset_format,
+                 :dataset_scope]
 
 USERS = [:metadata_author, :contact_point]
 
