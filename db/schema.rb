@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150507160127) do
+ActiveRecord::Schema.define(version: 20150514165438) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20150507160127) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "legacy_id"
   end
 
   create_table "dataset_scopes", force: true do |t|
@@ -74,12 +75,14 @@ ActiveRecord::Schema.define(version: 20150507160127) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "legacy_id"
   end
 
   create_table "licenses", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "legacy_id"
   end
 
   create_table "network_locations", force: true do |t|
@@ -93,18 +96,22 @@ ActiveRecord::Schema.define(version: 20150507160127) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "legacy_id"
+    t.string   "code"
   end
 
   create_table "sources", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "legacy_id"
   end
 
   create_table "use_levels", force: true do |t|
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "legacy_id"
   end
 
   create_table "users", force: true do |t|
