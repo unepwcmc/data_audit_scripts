@@ -1,21 +1,16 @@
 require 'csv'
 
-DIRECT_TABLES = [:programme, :license, :importance_level,
-                 :use_level, :source, :dataset_format,
-                 :dataset_scope]
+CSV_FILES = [:programme, :dataset_format, :use_level,
+             :license, :source, :importance_level, :datasets]
 
 USERS = [:metadata_author, :contact_point]
 
 class Importer
-  def initialize filename: filename
-    @filename = filename
-  end
 
   def import
-    csv_table = CSV.read(@filename, headers: true)
-    csv_table.each do |dataset|
-      converted_dataset = find_fields csv_values: dataset
-      dataset_manipulation converted_dataset: converted_dataset
+    CSV_FILES.each do |file|
+      complete_filename = file.to_s + '.csv'
+      read_csv csv_table: complete_filename
     end
   end
 
@@ -32,9 +27,17 @@ class Importer
 
   private
 
+  def read_csv csv_table: csv_table
+    csv_table = CSV.read(csv_table, headers: true)
+    csv_table.each do |dataset|
+      converted_dataset = find_fields csv_values: dataset
+      dataset_manipulation converted_dataset: converted_dataset
+    end
+  end
+
   def dataset_manipulation converted_dataset: converted_dataset
     converted_dataset.each do |k,v|
-      if DIRECT_TABLES.include? k
+      if k == :dataset_scope
         direct_tables k,v
       elsif USERS.include? k
         user_info v
