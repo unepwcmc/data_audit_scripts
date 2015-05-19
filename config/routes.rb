@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :audit_statuses
+
   resources :network_locations
 
   resources :users

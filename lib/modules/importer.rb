@@ -1,7 +1,7 @@
 require 'csv'
 
-CSV_FILES = [:programme, :dataset_format, :use_level,
-             :license, :source, :importance_level, :datasets]
+CSV_FILES = [:programme, :dataset_format, :use_level, :license, 
+             :source, :importance_level, :audit_status, :datasets]
 
 USERS = [:metadata_author, :contact_point]
 
@@ -9,8 +9,7 @@ class Importer
 
   def import
     CSV_FILES.each do |file|
-      complete_filename = file.to_s + '.csv'
-      read_csv csv_table: complete_filename
+      read_csv csv_table: file
     end
   end
 
@@ -28,18 +27,23 @@ class Importer
   private
 
   def read_csv csv_table: csv_table
-    csv_table = CSV.read(csv_table, headers: true)
-    csv_table.each do |dataset|
+    csv_file = csv_table.to_s + '.csv'
+    csv_data = CSV.read(csv_file, headers: true)
+    csv_data.each do |dataset|
       converted_dataset = find_fields csv_values: dataset
-      dataset_manipulation converted_dataset: converted_dataset
+      if csv_table == :datasets
+        dataset_manipulation converted_dataset: converted_dataset
+      elsif csv_table == :programme
+        programme_manipulation converted_dataset: converted_dataset
+      else
+        create_record_with_class csv_table, converted_dataset
+      end
     end
   end
 
   def dataset_manipulation converted_dataset: converted_dataset
     converted_dataset.each do |k,v|
-      if k == :dataset_scope
-        direct_tables k,v
-      elsif USERS.include? k
+      if USERS.include? k
         user_info v
       elsif k == :network_location
         network_location k,v
@@ -47,13 +51,18 @@ class Importer
     end
   end
 
-  def direct_tables k,v
-    cls = Object.const_get(k.to_s.classify, Class.new)
-    cls.find_or_create_by(name: v)
+  def programme_manipulation converted_dataset: converted_dataset
+    converted_dataset[:name] = converted_dataset.delete :programme_legacy_id
+    create_record_with_class :programme, converted_dataset
   end
 
   def user_info v
     User.find_or_create_by(name: v)
+  end
+
+  def create_record_with_class (table, options = {})
+    cls = Object.const_get(table.to_s.classify, Class.new)
+    cls.find_or_create_by(options)
   end
 
   def network_location k,v
@@ -64,5 +73,4 @@ class Importer
     drive_id = Drive.where('name = ?', drive_name).first[:id]
     NetworkLocation.find_or_create_by(drive_id: drive_id, path: path)
   end
-
 end
