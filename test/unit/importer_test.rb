@@ -38,11 +38,21 @@ class TestImporter < ActiveSupport::TestCase
     FactoryGirl.create(:column_match, model_columns: 'programme_legacy_id', access_columns: 'Programme')
     FactoryGirl.create(:column_match, model_columns: 'code', access_columns: 'Suffix')
     FactoryGirl.create(:column_match, model_columns: 'legacy_id', access_columns: 'ID')
+    FactoryGirl.create(:column_match, model_columns: 'legacy_id', access_columns: 'CODE')
+    FactoryGirl.create(:column_match, model_columns: 'name', access_columns: 'NAME')
+    FactoryGirl.create(:column_match, model_columns: 'legacy_id', access_columns: 'Use level ID')
+    FactoryGirl.create(:column_match, model_columns: 'legacy_id', access_columns: 'Importance ID')
+    FactoryGirl.create(:column_match, model_columns: 'name', access_columns: 'Use level rate')
+    FactoryGirl.create(:column_match, model_columns: 'name', access_columns: 'LICENSE')
+    FactoryGirl.create(:column_match, model_columns: 'name', access_columns: 'BODY')
+    FactoryGirl.create(:column_match, model_columns: 'name', access_columns: 'Importance rate')
+    FactoryGirl.create(:column_match, model_columns: 'state', access_columns: 'Audit Status')
+    FactoryGirl.create(:column_match, model_columns: 'detail', access_columns: 'Detail')
 
     dataset_csv = [ { 'WCMC Point of contact' => 'Jackson Martinez','Form fill-in by' => 'Ricardo Quaresma',
                        'NetworkLocation' => 'C:\MIGUEL TORRES\FILES', 'Programme' => 11} ]
     programme_csv = [ { 'Suffix' => 'D5', 'ID' => 11, 'Programme' => 'informatics'} ]
-    dataset_format_csv = [ { 'CODE' => '22', 'NAME' => 'vector' } ]
+    dataset_format_csv = [ { 'CODE' => 22, 'NAME' => 'vector' } ]
     use_level_csv = [ { "Use level ID" => 33,"Use level rate" => 'Sometimes' } ]
     license_csv = [ { "CODE" => 44,"LICENSE" => 'To Kill'} ]
     source_csv = [ { "ID" => 55,"BODY" => 'UNEP'} ]
@@ -67,6 +77,12 @@ class TestImporter < ActiveSupport::TestCase
     NetworkLocation.expects(:find_or_create_by).with(path: 'MIGUEL TORRES\FILES', drive_id: 999)
 
     Programme.expects(:find_or_create_by).with(name: 'informatics', code: 'D5', legacy_id: 11)
+    DatasetFormat.expects(:find_or_create_by).with(legacy_id: 22, name: 'vector')
+    UseLevel.expects(:find_or_create_by).with(legacy_id: 33, name: 'Sometimes')
+    License.expects(:find_or_create_by).with(legacy_id: 44, name: 'To Kill')
+    Source.expects(:find_or_create_by).with(legacy_id: 55, name: 'UNEP')
+    ImportanceLevel.expects(:find_or_create_by).with(legacy_id: 66, name: 'High')
+    AuditStatus.expects(:find_or_create_by).with(legacy_id: 77, state: 'OK', detail: 'Detailed')
 
     importer = Importer.new
     importer.import
