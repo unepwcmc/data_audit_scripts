@@ -1,7 +1,7 @@
 require 'csv'
 
-CSV_FILES = [:programme, :dataset_format, :use_level, :license, 
-             :source, :importance_level, :audit_status, :datasets]
+CSV_FILES = [:programmes, :dataset_formats, :use_levels, :licenses, 
+             :sources, :importance_levels, :audit_statuses, :datasets]
 
 USERS = [:metadata_author, :contact_point]
 
@@ -33,8 +33,8 @@ class Importer
       converted_dataset = find_fields csv_values: dataset
       if csv_table == :datasets
         dataset_manipulation converted_dataset: converted_dataset
-      elsif csv_table == :programme
-        programme_manipulation converted_dataset: converted_dataset
+      elsif [:programmes, :audit_statuses].include? csv_table
+        duplicated_manipulation converted_dataset: converted_dataset, table: csv_table
       else
         create_record_with_class csv_table, converted_dataset
       end
@@ -47,13 +47,16 @@ class Importer
         user_info v
       elsif k == :network_location
         network_location k,v
+      elsif k.to_s.end_with? 'legacy_id'
+        legacy_ids_manipulation k,v
       end
     end
   end
 
-  def programme_manipulation converted_dataset: converted_dataset
-    converted_dataset[:name] = converted_dataset.delete :programme_legacy_id
-    create_record_with_class :programme, converted_dataset
+  def duplicated_manipulation converted_dataset: converted_dataset, table: table
+    legacy_id_name = table.to_s + '_legacy_id'
+    converted_dataset[:name] = converted_dataset.delete legacy_id_name.to_sym
+    create_record_with_class table, converted_dataset
   end
 
   def user_info v
@@ -61,7 +64,7 @@ class Importer
   end
 
   def create_record_with_class (table, options = {})
-    cls = Object.const_get(table.to_s.classify, Class.new)
+    cls = extract_class table: table
     cls.find_or_create_by(options)
   end
 
@@ -72,5 +75,15 @@ class Importer
     Drive.find_or_create_by(name: drive_name)
     drive_id = Drive.where('name = ?', drive_name).first[:id]
     NetworkLocation.find_or_create_by(drive_id: drive_id, path: path)
+  end
+
+  def legacy_ids_manipulation k,v
+    table = k.to_s.split('_legacy_id').first
+    cls = extract_class table: table
+    cls.where('legacy_id = ?', v)
+  end
+
+  def extract_class table: table
+    Object.const_get(table.to_s.singularize.classify, Class.new)
   end
 end

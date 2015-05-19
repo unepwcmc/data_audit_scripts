@@ -11,17 +11,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150519110211) do
+ActiveRecord::Schema.define(version: 20150519125217) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "audit_statuses", force: true do |t|
-    t.string   "state"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string   "name"
     t.text     "detail"
     t.integer  "legacy_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "column_matches", force: true do |t|
